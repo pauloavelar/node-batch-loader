@@ -21,3 +21,15 @@ rules:
       pattern:
         ts: never
   import/prefer-default-export: off
+  no-unused-vars:
+    - 2
+    - args: none
+  max-len:
+    - error
+    - code: 120
+      tabWidth: 2
+      ignoreUrls: true
+  object-curly-newline:
+    - off
+  no-await-in-loop:
+    - off

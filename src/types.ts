@@ -13,11 +13,11 @@ export type ValidatorFunction = (item: Item) => boolean;
 export interface ValidatorOptions {
   urlBuilder: (item: Item) => string;
   httpMethod: string;
-  comparator: (item: Item, response: ApiResponse) => boolean;
+  comparator: (item: Item, response: ApiResponse) => boolean | Promise<boolean>;
 }
 export type ResultValidator = ValidatorFunction | ValidatorOptions;
 
-export type ChunkGrowthFunction = (currentChunkSize: number) => number;
+export type ChunkGrowthFunction = (currentChunkSize: number, previousChunkErrorRate: number) => number;
 
 export type UrlBuilder = (item: Item) => string;
 
@@ -43,12 +43,14 @@ export interface ApiConfig {
 
 export interface InputConfig {
   file: string | Buffer;
+  listLocation?: string;
   itemTransformer?: ItemTransformer;
 }
 
 export interface OutputConfig {
   file: string | Buffer;
   level?: OutputLevel;
+  idTransformer?: (responseBody: any) => any;
 }
 
 export interface ChunkSizeConfig {
@@ -63,11 +65,17 @@ export interface ConcurrencyConfig {
   chunkSize?: number | ChunkSizeConfig;
 }
 
+export interface LogConfig {
+  level: 'error' | 'warn' | 'info' | 'debug' | 'trace';
+  toStdout?: boolean;
+  toFile?: boolean | string;
+}
+
 export interface BatchConfig {
   api: ApiConfig;
   input: InputConfig;
   output?: OutputConfig;
   validator?: ResultValidator;
   concurrency: ConcurrencyConfig;
-  logLevel?: LogLevel;
+  logging?: LogConfig;
 }

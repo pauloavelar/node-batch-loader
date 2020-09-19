@@ -19,7 +19,8 @@
   "homepage": "https://github.com/pauloavelar/node-batch-loader#readme",
   "dependencies": {
     "csv-parser": "^2.3.3",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "simple-node-logger": "^18.12.24"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.7",
