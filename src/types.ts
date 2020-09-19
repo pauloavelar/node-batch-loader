@@ -16,6 +16,10 @@ export interface ValidatorOptions {
   comparator: (item: Item, response: ApiResponse) => boolean | Promise<boolean>;
 }
 export type ResultValidator = ValidatorFunction | ValidatorOptions;
+export interface ItemResult {
+  item: Item;
+  status: number;
+}
 
 export type ChunkGrowthFunction = (currentChunkSize: number, previousChunkErrorRate: number) => number;
 
