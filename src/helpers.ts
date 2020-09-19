@@ -1,3 +1,6 @@
+import { createSimpleLogger, Logger } from 'simple-node-logger';
+import { LogConfig } from './types';
+
 export async function delay(ms: number): Promise<void> {
   return new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
 }
@@ -12,4 +15,8 @@ export function isString(value: any): value is string {
 
 export function isObject<T>(value: any | T): value is T {
   return typeof value === 'object';
+}
+
+export function createLogger(config?: LogConfig): Logger {
+  return createSimpleLogger({ /* TODO add options */ });
 }

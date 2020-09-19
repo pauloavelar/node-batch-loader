@@ -17,8 +17,9 @@ export interface ValidatorOptions {
 }
 export type ResultValidator = ValidatorFunction | ValidatorOptions;
 export interface ItemResult {
+  success: boolean;
+  statusCode: number;
   item: Item;
-  status: number;
 }
 
 export type ChunkGrowthFunction = (currentChunkSize: number, previousChunkErrorRate: number) => number;
