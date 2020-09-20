@@ -1,7 +1,8 @@
 import fetch from 'node-fetch';
-import { isString } from '../helpers';
 
-import { ApiConfig, Item, ItemResult, MapLikeObject } from '../types';
+import { isString } from './helpers';
+
+import { ApiConfig, Item, ItemResult, MapLikeObject } from './types';
 
 export class ApiService {
   constructor(
@@ -19,6 +20,14 @@ export class ApiService {
 
     // TODO add id transformer if present
 
-    return { item, status: response.status };
+    return {
+      item,
+      success: this.isSuccessful(response.status),
+      statusCode: response.status,
+    };
+  }
+
+  private isSuccessful(statusCode: number): boolean {
+    return Math.floor(statusCode / 100) === 2;
   }
 }

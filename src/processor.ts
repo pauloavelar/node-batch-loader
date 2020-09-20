@@ -1,11 +1,12 @@
 import { Logger } from 'simple-node-logger';
 
-import { readFile } from './file-readers';
 import { createLogger, delay } from './helpers';
-import { BatchConfig, Item, ItemResult, MapLikeObject } from './types';
-import { ApiService } from './rest';
-import { ConfigValidator } from './validators';
+import { ApiService } from './api-service';
+import { ConfigValidator } from './config-validator';
 import { ConcurrencyService } from './concurrency';
+import { FileReader } from './readers/file-reader';
+
+import { BatchConfig, Item, ItemResult, MapLikeObject } from './types';
 
 export class Processor {
   constructor(
@@ -13,18 +14,24 @@ export class Processor {
     private readonly api: ApiService = new ApiService(config.api),
     private readonly logger: Logger = createLogger(config.logging),
     private readonly validator: ConfigValidator = new ConfigValidator(logger),
+    private readonly fileReader: FileReader = new FileReader(logger, config.input),
     private readonly concurrency: ConcurrencyService = new ConcurrencyService(config.concurrency),
   ) { }
 
   async run(): Promise<void> {
     this.validator.validate(this.config);
 
-    const items = readFile(this.config.input);
+    this.logger.info('Reading file...', this.config.input);
+    const items = this.fileReader.readFile();
+    this.logger.info(`File read, found ${items.length} items`);
+
     const maximumRpm = this.concurrency.getMaximumRpm();
     const maxChunkSize = this.concurrency.getMaxChunkSize();
     const minWaitTimeMs = this.concurrency.calculateMinWaitTime(maximumRpm, maxChunkSize);
 
     let currentChunkSize = this.concurrency.getStartingChunkSize();
+
+    this.logger.info('Concurrency settings:', { currentChunkSize, maxChunkSize, maximumRpm, minWaitTimeMs });
 
     while (items.length > 0) {
       const chunk = items.splice(0, currentChunkSize);

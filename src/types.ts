@@ -1,4 +1,6 @@
+import { ReadStream } from 'fs';
 import { Response } from 'node-fetch';
+import { LogLevel } from 'simple-node-logger';
 
 export type HeadlessCsvItem = { [key: number]: any };
 export type MapLikeObject = { [key: string]: any };
@@ -8,6 +10,8 @@ export type ItemTransformer = (item: Item) => MapLikeObject;
 
 export type ApiHeaders = { [key:string]: string };
 export type ApiResponse = Response;
+
+export type File = string | Buffer | ReadStream;
 
 export type ValidatorFunction = (item: Item) => boolean;
 export interface ValidatorOptions {
@@ -26,18 +30,7 @@ export type ChunkGrowthFunction = (currentChunkSize: number, previousChunkErrorR
 
 export type UrlBuilder = (item: Item) => string;
 
-export enum LogLevel {
-  VERBOSE = 'VERBOSE',
-  DEBUG = 'DEBUG',
-  INFO = 'INFO',
-  WARN = 'WARN',
-  ERROR = 'ERROR',
-}
-
-export enum OutputLevel {
-  ERRORS = 'ERRORS',
-  ALL = 'ALL',
-}
+export enum OutputLevel { ERRORS, ALL }
 
 export interface ApiConfig {
   url: string | UrlBuilder;
@@ -47,13 +40,14 @@ export interface ApiConfig {
 }
 
 export interface InputConfig {
-  file: string | Buffer;
+  file: File;
+  hasHeaders?: boolean;
   listLocation?: string;
   itemTransformer?: ItemTransformer;
 }
 
 export interface OutputConfig {
-  file: string | Buffer;
+  file: File;
   level?: OutputLevel;
   idTransformer?: (responseBody: any) => any;
 }
@@ -71,7 +65,7 @@ export interface ConcurrencyConfig {
 }
 
 export interface LogConfig {
-  level: 'error' | 'warn' | 'info' | 'debug' | 'trace';
+  level: LogLevel;
   toStdout?: boolean;
   toFile?: boolean | string;
 }

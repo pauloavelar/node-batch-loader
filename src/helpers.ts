@@ -1,5 +1,10 @@
+import { createReadStream, ReadStream } from 'fs';
+import { Readable } from 'stream';
 import { createSimpleLogger, Logger } from 'simple-node-logger';
-import { LogConfig } from './types';
+
+import { File, LogConfig } from './types';
+
+const DEFAULT_LOG_FILE = 'batch-loader-logs.txt';
 
 export async function delay(ms: number): Promise<void> {
   return new Promise<void>((resolve) => setTimeout(() => resolve(), ms));
@@ -18,5 +23,24 @@ export function isObject<T>(value: any | T): value is T {
 }
 
 export function createLogger(config?: LogConfig): Logger {
-  return createSimpleLogger({ /* TODO add options */ });
+  if (config?.toFile) {
+    if (isString(config.toFile)) {
+      return createSimpleLogger(config.toFile);
+    }
+
+    return createSimpleLogger(DEFAULT_LOG_FILE);
+  }
+
+  return createSimpleLogger();
+}
+
+export function convertFileToStream(file: File): Readable {
+  if (Buffer.isBuffer(file)) {
+    return Readable.from(file.toString());
+  }
+  if (file instanceof ReadStream) {
+    return file;
+  }
+
+  return createReadStream(file);
 }
